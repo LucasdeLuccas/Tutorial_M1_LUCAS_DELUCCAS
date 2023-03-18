@@ -1,0 +1,199 @@
+[gd_scene load_steps=13 format=2]
+
+[ext_resource path="res://actors/player_green.tscn" type="PackedScene" id=1]
+[ext_resource path="res://platform/platform.tscn" type="PackedScene" id=2]
+[ext_resource path="res://platform/spring_platform.tscn" type="PackedScene" id=3]
+[ext_resource path="res://platform/cloud_platform.tscn" type="PackedScene" id=4]
+[ext_resource path="res://fonts/Teko-Medium.ttf" type="DynamicFontData" id=5]
+[ext_resource path="res://kenney_pixelplatformer/actor/estrelas.png" type="Texture" id=6]
+[ext_resource path="res://kenney_pixelplatformer/actor/Captura de Tela 2023-03-17 às 10.08.04.png" type="Texture" id=7]
+[ext_resource path="res://kenney_pixelplatformer/tiles/9726184-pixel-art-alien-nave-espacial-ufo-8-bit-game-vehicle-on-white-background-vetor-removebg-preview.png" type="Texture" id=8]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Node2D
+
+var row = 50
+var col = 50
+var size = Vector2(32,-32)
+
+
+func _draw():
+	for r in row:
+		for c in col:
+			draw_rect(Rect2(c * size.x, r * size.y, size.x, size.y ),           
+			 Color.skyblue
+		 )
+
+onready var platform_container := $platform_container as Node2D
+onready var platform_initial_position_y = $platform_container/platform.position.y
+onready var camera := $camera as Camera2D
+onready var player := $player as KinematicBody2D
+onready var score_label := $camera/score as Label
+onready var camera_start_position = $camera.position.y
+
+var score = 0
+
+export (Array, PackedScene) var Platform_Scene
+
+func level_generator(amount):
+	for items in amount: 
+		var new_type = randi() % 3
+
+		platform_initial_position_y -= rand_range(36, 54)
+		var new_platform 
+		
+		if new_type == 0:
+			new_platform = Platform_Scene[0].instance() as StaticBody2D 
+		elif new_type == 1:
+			new_platform = Platform_Scene[1].instance() as StaticBody2D
+		elif new_type == 2:
+			new_platform = Platform_Scene[2].instance() as StaticBody2D
+			new_platform.connect(\"delete_object\", self, \"delete_object\")
+			
+			
+		if new_type != null:
+			new_platform.position = Vector2(rand_range(20,160),platform_initial_position_y) 
+			platform_container.call_deferred(\"add_child\", new_platform)
+	pass
+ 
+
+func _ready() -> void:
+	randomize()
+	level_generator(20)
+
+func _physics_process(delta: float) -> void:
+	if player.position.y < camera.position.y:
+		camera.position.y = player.position.y
+	score_update()
+
+func delete_object(obstacle):
+	if obstacle.name == \"player\":
+#		
+			if get_tree().change_scene(\"res://tittle-screen.tscn\") != OK:
+				print (\"algo deu errado\")
+
+	else :
+		obstacle.queue_free()
+		level_generator(1)
+
+func _on_platform_cleaner_body_entered(body : Node) -> void:
+	delete_object(body)
+	
+func score_update():
+	score  = (camera_start_position - camera.position.y) / 10
+	score_label.text = str(int(score))
+
+
+func _on_Nave_body_entered(body):
+	get_tree().change_scene(\"res://final_scenes.tscn\")
+
+"
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 102, 10 )
+
+[sub_resource type="DynamicFont" id=3]
+size = 28
+outline_size = 2
+outline_color = Color( 0, 0, 0, 1 )
+font_data = ExtResource( 5 )
+
+[sub_resource type="RectangleShape2D" id=4]
+extents = Vector2( 232.733, 52.5515 )
+
+[node name="doodle_jump" type="Node2D"]
+script = SubResource( 1 )
+Platform_Scene = [ ExtResource( 2 ), ExtResource( 3 ), ExtResource( 4 ) ]
+
+[node name="TextureRect" type="TextureRect" parent="."]
+margin_left = -215.0
+margin_top = -2434.0
+margin_right = 358.0
+margin_bottom = -1432.0
+rect_pivot_offset = Vector2( -265, 334 )
+texture = ExtResource( 6 )
+
+[node name="TextureRect2" type="TextureRect" parent="."]
+margin_left = -216.0
+margin_top = -3157.0
+margin_right = 348.0
+margin_bottom = -2155.0
+texture = ExtResource( 6 )
+
+[node name="TextureRect3" type="TextureRect" parent="."]
+margin_left = -215.0
+margin_top = -3892.0
+margin_right = 349.0
+margin_bottom = -2890.0
+texture = ExtResource( 6 )
+
+[node name="TextureRect4" type="TextureRect" parent="."]
+margin_left = -214.0
+margin_top = -4614.0
+margin_right = 350.0
+margin_bottom = -3612.0
+texture = ExtResource( 6 )
+
+[node name="TextureRect5" type="TextureRect" parent="."]
+margin_left = -26.0
+margin_top = -168.0
+margin_right = 212.0
+margin_bottom = 403.0
+texture = ExtResource( 7 )
+
+[node name="TextureRect6" type="TextureRect" parent="."]
+margin_left = -26.0
+margin_top = 76.0
+margin_right = 212.0
+margin_bottom = 322.0
+texture = ExtResource( 7 )
+
+[node name="TextureRect7" type="TextureRect" parent="."]
+margin_top = -1675.0
+margin_right = 238.0
+margin_bottom = -1429.0
+texture = ExtResource( 7 )
+
+[node name="platform_container" type="Node2D" parent="."]
+
+[node name="platform" parent="platform_container" instance=ExtResource( 2 )]
+position = Vector2( 90, 300 )
+
+[node name="player" parent="." instance=ExtResource( 1 )]
+position = Vector2( 90, 160 )
+
+[node name="camera" type="Camera2D" parent="."]
+position = Vector2( 90, 160 )
+current = true
+
+[node name="platform_cleaner" type="Area2D" parent="camera"]
+position = Vector2( 1, 174 )
+
+[node name="collision" type="CollisionShape2D" parent="camera/platform_cleaner"]
+position = Vector2( 1, 0 )
+shape = SubResource( 2 )
+
+[node name="score" type="Label" parent="camera"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -19.0
+margin_top = -163.0
+margin_right = 21.0
+margin_bottom = -116.0
+custom_fonts/font = SubResource( 3 )
+text = "0"
+align = 1
+
+[node name="Nave" type="Area2D" parent="."]
+position = Vector2( 91, -4385 )
+scale = Vector2( 0.333, 0.333 )
+
+[node name="Sprite" type="Sprite" parent="Nave"]
+texture = ExtResource( 8 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Nave"]
+position = Vector2( 0, 75.0752 )
+shape = SubResource( 4 )
+
+[connection signal="body_entered" from="camera/platform_cleaner" to="." method="_on_platform_cleaner_body_entered"]
+[connection signal="body_entered" from="Nave" to="." method="_on_Nave_body_entered"]

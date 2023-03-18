@@ -1,0 +1,35 @@
+[remap]
+
+importer="texture"
+type="StreamTexture"
+path="res://.import/Captura de Tela 2023-03-17 às 10.08.04.png-42b90b459bb46239b0f9a9adb4137227.stex"
+metadata={
+"vram_texture": false
+}
+
+[deps]
+
+source_file="res://kenney_pixelplatformer/actor/Captura de Tela 2023-03-17 às 10.08.04.png"
+dest_files=[ "res://.import/Captura de Tela 2023-03-17 às 10.08.04.png-42b90b459bb46239b0f9a9adb4137227.stex" ]
+
+[params]
+
+compress/mode=0
+compress/lossy_quality=0.7
+compress/hdr_mode=0
+compress/bptc_ldr=0
+compress/normal_map=0
+flags/repeat=0
+flags/filter=true
+flags/mipmaps=false
+flags/anisotropic=false
+flags/srgb=2
+process/fix_alpha_border=true
+process/premult_alpha=false
+process/HDR_as_SRGB=false
+process/invert_color=false
+process/normal_map_invert_y=false
+stream=false
+size_limit=0
+detect_3d=true
+svg/scale=1.0
